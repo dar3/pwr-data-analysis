@@ -39,10 +39,10 @@ from scipy import stats
 
 # Exercise 2 histogram vs boxplot
 
-# mean 1, odchylenie 1
+# mean 1, deviation 1
 # 100 rows 1 column
 x1 = 2 * (np.random.randn(100, 1) + 1)
-# mean -1, odchylenie 1
+# mean -1, deviation 1
 x2 = 3 * (np.random.randn(100, 1) - 1)
 
 # joining two columns 100 x 2 matrix
@@ -180,3 +180,78 @@ try:
 
 except FileNotFoundError:
     print("File was not found")
+
+
+# Exercise 6
+
+mu = 3
+sigma = 2  # sqr of 4 (variance)
+data = sigma * np.random.randn(1000) + mu
+
+plt.figure(figsize=(12, 5))
+
+plt.subplot(1, 2, 1)
+plt.hist(data, bins=30, density=True, color='plum', edgecolor='black')
+plt.title("Histogram N(3, 4)")
+
+
+x_range = np.linspace(mu - 4*sigma, mu + 4*sigma, 100)
+plt.plot(x_range, stats.norm.pdf(x_range, mu, sigma), 'r-', lw=2)
+
+# Distr CDF
+plt.subplot(1, 2, 2)
+# empirical distribution
+plt.plot(np.sort(data), np.linspace(0, 1, len(data)), color='darkorchid', lw=2)
+plt.title("Distr N(3, 4)")
+plt.grid(True)
+
+plt.tight_layout()
+plt.show()
+
+# Exercise 7
+
+# Prob P(Z < 2)
+# z - zmienna rozkladu standardowego
+p1 = stats.norm.cdf(2)
+
+# Prob P(|Z| < 2)
+p2 = stats.norm.cdf(2) - stats.norm.cdf(-2)
+
+print(f"P(Z < 2) = {p1:.4f}")
+print(f"P(|Z| < 2) = {p2:.4f}")
+
+# More that 97% from all values will be less than 2
+# P(Z < 2) = 0.9772
+# P(|Z| < 2) = 0.9545
+
+# Exercise 8
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+time = np.array([8.5, 7.6, 9.3, 5.5, 11.4, 6.9, 6.5, 12.9, 8.7, 4.8,
+                 4.2, 8.1, 6.5, 5.8, 6.7, 2.4, 11.1, 7.1, 8.8, 7.2])
+
+mean = np.mean(time)
+median = np.median(time)
+deviation = np.std(time, ddof=1)
+
+print(f"Average assembly time: {mean:.2f}")
+print(f"Median: {median:.2f}")
+print(f"Standard deviation: {deviation:.2f}")
+
+plt.figure(figsize=(12, 5))
+
+plt.subplot(1, 2, 1)
+plt.boxplot(time, vert=True, patch_artist=True)
+plt.title("Aseembly time boxplot")
+plt.ylabel("Time")
+
+plt.subplot(1, 2, 2)
+plt.hist(time, bins=6, color='skyblue', edgecolor='black')
+plt.title("Aseembly time histogram")
+plt.xlabel("Time")
+plt.ylabel("Quantity")
+
+plt.tight_layout()
+plt.show()
