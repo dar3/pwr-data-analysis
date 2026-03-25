@@ -34,7 +34,7 @@ print(f"p value: {p_val:.4f}")
 if p_val < 0.05:
     print("Reject H0")
 else:
-    print("Do not reject H0")
+    print("No reasons to reject H0")
 # if p-value is small (< 0.05), reject hypothesis about 3 days
 
 # Exercise 3
@@ -50,7 +50,7 @@ z_stat = (mean_of_try - technical_norm_time) / (sigma / np.sqrt(employees))
 
 # Calculation of p value
 # Check where it takes more time than technical_norm (one side test)
-p_val = 1 - stats.norm.cdf(z_stat)
+p_val = stats.norm.sf(z_stat)
 
 print(f"Statistic Z: {z_stat:.4f}")
 print(f"Value p: {p_val:.4f}")
@@ -117,7 +117,7 @@ df1 = n1 - 1
 df2 = n2 - 1
 
 # P-value for one side test
-p_val = 2 * min(stats.f.cdf(f_stat, df1, df2), 1 - stats.f.cdf(f_stat, df1, df2))
+p_val = 2 * min(stats.f.cdf(f_stat, df1, df2), stats.f.sf(f_stat, df1, df2))
 
 print(f"Group variance 1: {s1_sq:.2f} (std dev: {np.sqrt(s1_sq):.2f})")
 

@@ -185,7 +185,7 @@ except FileNotFoundError:
 # Exercise 6
 
 mu = 3
-sigma = 2  # sqr of 4 (variance)
+sigma = 4  # sqr of 4 (variance)
 data = sigma * np.random.randn(1000) + mu
 
 plt.figure(figsize=(12, 5))
