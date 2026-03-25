@@ -94,8 +94,8 @@ pedagogika_sal = graduates[graduates['COLLEGE'] == 'Pedagogika']['SALARY']
 # omit value W - statistic "_"
 _, p10r = stats.shapiro(rolnictwo_sal)
 _, p10p = stats.shapiro(pedagogika_sal)
-print(f"Normalność płac - Rolnictwo: p = {p10r:.4e}")
-print(f"Normalność płac - Pedagogika: p = {p10p:.4f}")
+print(f"Salary normality - Rolnictwo: p = {p10r:.4e}")
+print(f"Salary normality - Pedagogika: p = {p10p:.4f}")
 
 
 # Q - Q plots
