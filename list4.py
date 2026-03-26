@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from scipy import stats
+import scipy.io as sio
 
 nervous = np.array([3, 3, 4, 5, 5])
 calm = np.array([4, 6, 7, 9, 9])
@@ -12,7 +13,42 @@ data13 = np.array([175.26, 177.8, 167.64, 160.02, 172.72, 177.8, 175.26, 170.18,
 data17 = np.array([172.72, 157.48, 170.18, 172.72, 175.26, 170.18, 154.94, 149.86, 157.48, 154.94, 175.26, 167.64, 157.48, 157.48, 154.94, 177.8])
 
 # Exercise 1
-# stats.ttest_ind(men, women, equal_var=True/False, alternative='two-sided'/'less'/'greater')
+
+
+men_mat = sio.loadmat('data/body_men.mat')
+women_mat = sio.loadmat('data/body_women.mat')
+
+body_men = men_mat['body_men']
+body_women = women_mat['body_women']
+
+men_feature = body_men[:, 1]
+women_feature = body_women[:, 1]
+
+
+
+print("ZADANIE 1: Porownanie dwoch grup (mężczyźni vs kobiety)")
+
+# Przypadek A: Założenie o równości wariancji (equal_var=True) -> klasyczny test t-Studenta
+t_stat_eq, p_val_eq = stats.ttest_ind(men_feature, women_feature, equal_var=True, alternative='two-sided')
+print("\n--- Założenie o równej wariancji ---")
+print(f"t-stat = {t_stat_eq:.4f}, p-value = {p_val_eq:.4f}")
+
+if p_val_eq < 0.05:
+    print("Odrzucamy H0. Średnie w obu grupach są istotnie różne.")
+else:
+    print("Brak podstaw do odrzucenia H0. Średnie są równe.")
+
+# Przypadek B: Założenie o różnej wariancji (equal_var=False) -> tzw. test Welcha
+t_stat_uneq, p_val_uneq = stats.ttest_ind(men_feature, women_feature, equal_var=False, alternative='two-sided')
+print("\n--- Założenie o różnej wariancji (Test Welcha) ---")
+print(f"t-stat = {t_stat_uneq:.4f}, p-value = {p_val_uneq:.4f}")
+
+if p_val_uneq < 0.05:
+    print("Odrzucamy H0. Średnie w obu grupach są istotnie różne.")
+else:
+    print("Brak podstaw do odrzucenia H0. Średnie są równe.")
+
+
 
 # compare alpha with p manually
 
