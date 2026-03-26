@@ -47,6 +47,47 @@ stat, p_val = stats.ks_2samp(controlA, treatmentA)
 print("Exercise 3")
 print(f"Test K-S: statistic={stat:.4f}, p-value={p_val:.4f}")
 
+def get_ecdf(data):
+    x = np.sort(data)
+    y = np.arange(1, len(data) + 1) / len(data)
+    return x, y
+
+x1, y1 = get_ecdf(controlA)
+x2, y2 = get_ecdf(treatmentA)
+
+
+all_x = np.sort(np.concatenate([x1, x2]))
+y1_interp = np.searchsorted(x1, all_x, side='right') / len(x1)
+y2_interp = np.searchsorted(x2, all_x, side='right') / len(x2)
+diffs = np.abs(y1_interp - y2_interp)
+max_idx = np.argmax(diffs)
+x_d = all_x[max_idx]
+y_low = min(y1_interp[max_idx], y2_interp[max_idx])
+y_high = max(y1_interp[max_idx], y2_interp[max_idx])
+
+
+plt.figure(figsize=(8, 6))
+
+
+plt.step(x1, y1, where='post', color='black', label='controlA', linewidth=1)
+plt.step(x2, y2, where='post', color='black', linestyle='--', label='treatmentA', linewidth=1)
+
+plt.vlines(x_d, y_low, y_high, color='red', linewidth=1.5)
+plt.text(x_d + 0.2, (y_low + y_high) / 2, 'D', color='red', fontweight='bold', fontsize=14, fontstyle='italic')
+
+plt.title("KS-Test Comparison Cumulative Fraction Plot")
+plt.xlabel("X")
+plt.ylabel("Fraction of total")
+plt.ylim(0, 1.05)
+plt.xlim(-6.5, 7.5)
+plt.yticks([0, 0.2, 0.4, 0.6, 0.8, 1.0])
+plt.grid(False)
+
+plt.tick_params(direction='in', top=True, right=True, length=6)
+
+plt.show()
+
+
 # Exercise 4 and 6
 men_h = patients[patients['plec'] == 'M']['wzrost']
 women_h = patients[patients['plec'] == 'K']['wzrost']
@@ -74,6 +115,20 @@ _, p6m = stats.shapiro(men_h)
 _, p6w = stats.shapiro(women_h)
 print(f"Normal distr (S-W) Mężczyźni: p = {p6m:.4f}")
 print(f"Normal distr (S-W) Kobiety: p = {p6w:.4f}")
+#
+# stat_m_lilli, p6m_lilli = lilliefors(men_h, dist='norm')
+# stat_w_lilli, p6w_lilli = lilliefors(women_h, dist='norm')
+#
+# print(f"Normalność Shapiro-Wilk (Mężczyźni): p = {p6m_sw:.4f}")
+# print(f"Normalność Shapiro-Wilk (Kobiety): p = {p6w_sw:.4f}")
+# print("-" * 30)
+# print(f"Normalność Lilliefors (Mężczyźni): p = {p6m_lilli:.4f}")
+# print(f"Normalność Lilliefors (Kobiety): p = {p6w_lilli:.4f}")
+
+
+if p6m_lilli > 0.05 and p6w_lilli > 0.05:
+    print("\nOba testy (S-W i Lilliefors) potwierdzają rozkład normalny wzrostu (p > 0.05).")
+
 
 print("\n Exercise 7")
 _, p7 = stats.shapiro(patients['cukier'])
@@ -96,6 +151,7 @@ _, p10r = stats.shapiro(rolnictwo_sal)
 _, p10p = stats.shapiro(pedagogika_sal)
 print(f"Salary normality - Rolnictwo: p = {p10r:.4e}")
 print(f"Salary normality - Pedagogika: p = {p10p:.4f}")
+print("Brak rozkladu normalnego p = 1.2215 x 10^-9 < 0.05")
 
 
 # Q - Q plots
@@ -122,3 +178,49 @@ generate_qq_plot(capacitors['pojemnosc'], "Q-Q Plot: Capacitors (Ex. 9)")
 # Ex. 10
 generate_qq_plot(rolnictwo_sal, "Q-Q Plot: Salary - Farming  (Ex. 10)")
 generate_qq_plot(pedagogika_sal, "Q-Q Plot: Salary - Pedagogics  (Ex. 10)")
+
+# ECDF plots for Ex. 4, 5, 6
+
+def plot_ks_comparison(data1, data2, label1, label2, title):
+    def get_ecdf(data):
+        x = np.sort(data)
+        y = np.arange(1, len(data) + 1) / len(data)
+        return x, y
+
+    x1, y1 = get_ecdf(data1)
+    x2, y2 = get_ecdf(data2)
+
+    all_x = np.sort(np.unique(np.concatenate([x1, x2])))
+    y1_interp = np.searchsorted(x1, all_x, side='right') / len(x1)
+    y2_interp = np.searchsorted(x2, all_x, side='right') / len(x2)
+    diffs = np.abs(y1_interp - y2_interp)
+    max_idx = np.argmax(diffs)
+
+    x_d = all_x[max_idx]
+    y_low = min(y1_interp[max_idx], y2_interp[max_idx])
+    y_high = max(y1_interp[max_idx], y2_interp[max_idx])
+
+    plt.figure(figsize=(8, 6))
+    plt.step(x1, y1, where='post', color='black', label=label1, linewidth=1)
+    plt.step(x2, y2, where='post', color='black', linestyle='--', label=label2, linewidth=1)
+
+
+    plt.vlines(x_d, y_low, y_high, color='red', linewidth=1.5)
+    plt.text(x_d, (y_low + y_high) / 2, ' D', color='red', fontweight='bold', fontstyle='italic')
+
+    plt.title(title)
+    plt.xlabel("X")
+    plt.ylabel("Fraction of total")
+    plt.tick_params(direction='in', top=True, right=True)
+    plt.legend(loc='lower right')
+    plt.ylim(0, 1.05)
+    plt.show()
+
+
+
+
+plot_ks_comparison(men_h, women_h, 'Mężczyźni', 'Kobiety',
+                   "KS-Test Comparison: Wzrost (Zad. 4 & 6)")
+
+plot_ks_comparison(delikates, renety, 'Delikates', 'Renety',
+                   "KS-Test Comparison: Czas na drzewie (Zad. 5)")
