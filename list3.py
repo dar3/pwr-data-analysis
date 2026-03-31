@@ -115,15 +115,17 @@ _, p6m = stats.shapiro(men_h)
 _, p6w = stats.shapiro(women_h)
 print(f"Normal distr (S-W) Mężczyźni: p = {p6m:.4f}")
 print(f"Normal distr (S-W) Kobiety: p = {p6w:.4f}")
-#
-# stat_m_lilli, p6m_lilli = lilliefors(men_h, dist='norm')
-# stat_w_lilli, p6w_lilli = lilliefors(women_h, dist='norm')
-#
-# print(f"Normalność Shapiro-Wilk (Mężczyźni): p = {p6m_sw:.4f}")
-# print(f"Normalność Shapiro-Wilk (Kobiety): p = {p6w_sw:.4f}")
-# print("-" * 30)
-# print(f"Normalność Lilliefors (Mężczyźni): p = {p6m_lilli:.4f}")
-# print(f"Normalność Lilliefors (Kobiety): p = {p6w_lilli:.4f}")
+
+
+
+stat_m_lilli, p6m_lilli = lilliefors(men_h, dist='norm')
+stat_w_lilli, p6w_lilli = lilliefors(women_h, dist='norm')
+
+print(f"Normalność Shapiro-Wilk (Mężczyźni): p = {p6m:.4f}")
+print(f"Normalność Shapiro-Wilk (Kobiety): p = {p6w:.4f}")
+print("-" * 30)
+print(f"Normalność Lilliefors (Mężczyźni): p = {p6m_lilli:.4f}")
+print(f"Normalność Lilliefors (Kobiety): p = {p6w_lilli:.4f}")
 
 
 if p6m_lilli > 0.05 and p6w_lilli > 0.05:
