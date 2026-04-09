@@ -82,7 +82,7 @@ print("\nEx. 3 Chmiel")
 pollinated = data_chmiel.iloc[:, 0].dropna()
 not_pollinated = data_chmiel.iloc[:, 1].dropna()
 
-# test Wilcoxona dla prób zależnych
+
 stat_chmiel, p_val_chmiel = stats.wilcoxon(pollinated, not_pollinated, alternative='two-sided')
 
 print(f"Statystyka W: {stat_chmiel}")
