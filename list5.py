@@ -2,6 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.stats as stats
 import pandas as pd
+import pandas as pd
+import numpy as np
+from scipy.stats import binomtest
 
 data_czyt = pd.read_csv('data/czytelnictwo.csv', sep=None, engine='python')
 data_chmiel = pd.read_csv('data/chmiel.csv', sep=None, engine='python')
@@ -20,7 +23,7 @@ plt.show()
 
 plt.figure(figsize=(8, 6))
 for i in range(len(w1)):
-    plt.plot([1, 2], [w1[i], w2[i]], marker='o', color='gray', alpha=0.5)
+    plt.plot([1, 2], [w1[i], w2[i]], marker='o', color='blue', alpha=0.5)
 plt.xticks([1, 2], ['Przed dietą', 'Po diecie'])
 plt.title('Zmiany ciężaru ciała dla poszczególnych kobiet')
 plt.ylabel('Ciężar ciała (kg)')
@@ -46,27 +49,32 @@ else:
 
 
 # Ex. 2
-before_empl = data_czyt.iloc[:, 0].dropna()
-after_empl = data_czyt.iloc[:, 1].dropna()
+df_czytelnictwo = pd.read_csv('data/czytelnictwo.csv', sep=None, engine='python')
+print("Ex. 2")
+print("Test Znaków")
 
-# wykonanie testu Wilcoxona dla zmiennych powiazanych
-# rozn rozna od 0
-stat, p_value = stats.wilcoxon(before_empl, after_empl, alternative='two-sided')
+time_before = df_czytelnictwo.iloc[:, 0].dropna()
+time_after = df_czytelnictwo.iloc[:, 1].dropna()
 
+roznice_czyt = time_before - time_after
 
-print("\nEx. 2")
-print(f"Statystyka testowa W: {stat}")
-print(f"Wartość p-value: {p_value:.5f}")
+roznice_czyt_bez_zer = roznice_czyt[roznice_czyt != 0]
+
+zmiany_kierunkowe = np.sum(roznice_czyt_bez_zer > 0)
+n_czyt = len(roznice_czyt_bez_zer)
+
+wynik_czyt = binomtest(zmiany_kierunkowe, n_czyt, p=0.5, alternative='two-sided')
+
+print(f"Liczba badanych par po odrzuceniu zer: {n_czyt}")
+print(f"P-value: {wynik_czyt.pvalue:.5f}")
 
 poziom_istotnosci = 0.05
-if p_value < poziom_istotnosci:
-    print("\nWniosek:")
-    print("Odrzucamy hipotezę zerową.")
-    print("Zatrudnienie w firmie miało statystycznie istotny wpływ na ilość czasu poświęcanego na lekturę prasy.")
+if wynik_czyt.pvalue < poziom_istotnosci:
+    print("\nWniosek: Odrzucamy hipotezę zerową.")
+    print("Zatrudnienie w firmie miało statystycznie istotny wpływ na czas poświęcany na lekturę prasy.")
 else:
-    print("\nWniosek:")
-    print("Brak podstaw do odrzucenia hipotezy zerowej.")
-    print("Brak dowodów statystycznych na to, że zatrudnienie miało wpływ na czas czytania.")
+    print("\nWniosek: Brak podstaw do odrzucenia hipotezy zerowej.")
+    print("Brak dowodów statystycznych na to, że zatrudnienie wpłynęło na czas czytania.")
 
 
 # Ex. 3
